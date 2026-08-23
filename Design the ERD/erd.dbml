@@ -1,0 +1,47 @@
+// ============================================
+// abdalrahim-task-app — ERD
+// you need to install dbdiagram to see the database as chart
+// ============================================
+
+Table users {
+  id         int          [pk, increment, note: 'PK']
+  name       varchar(255) [not null]
+  email      varchar(255) [not null, unique, note: 'UQ + NN']
+  created_at timestamp    [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'Assignees. Deleting a user detaches tasks (SET NULL).'
+}
+
+Table tasks {
+  id         int          [pk, increment]
+  title      varchar(255) [not null, note: 'NN + CHECK(TRIM(title) <> "")']
+  priority   varchar(20)  [not null, default: 'medium', note: 'CHECK IN (low, medium, high)']
+  done       boolean      [not null, default: false]
+  user_id    int          [ref: > users.id, null, note: 'FK, NULLABLE — unassigned task is valid']
+  created_at timestamp    [not null, default: `CURRENT_TIMESTAMP`]
+
+  Note: 'FK user_id → users.id | ON DELETE SET NULL, ON UPDATE CASCADE'
+
+  Indexes {
+    (user_id, done) [name: 'idx_tasks_user_done']
+  }
+}
+
+Table labels {
+  id   int         [pk, increment]
+  name varchar(50) [not null, unique, note: 'UQ + NN']
+
+  Note: 'Reusable tags. Shared across many tasks.'
+}
+
+// ---- Junction table: tasks N:M labels ----
+Table label_task {
+  label_id int [ref: > labels.id, not null]
+  task_id  int [ref: > tasks.id,  not null]
+
+  Indexes {
+    (label_id, task_id) [pk, name: 'pk_label_task']
+  }
+
+  Note: 'Composite PK prevents duplicate pairs. Both FKs ON DELETE CASCADE — a pure relation row has no meaning once either side is gone.'
+}

@@ -1,0 +1,40 @@
+{
+  "version": "3.0.0",
+  "darkMode": true,
+  "gridEnabling": false,
+  "currentViewName": null,
+  "defaultView": {
+    "detailLevel": "All",
+    "relationshipMode": "All",
+    "tablePositions": [
+      {
+        "name": "users",
+        "schemaName": "public",
+        "x": 12,
+        "y": -110.82820899496423
+      },
+      {
+        "name": "tasks",
+        "schemaName": "public",
+        "x": 500.64228515625,
+        "y": 12
+      },
+      {
+        "name": "labels",
+        "schemaName": "public",
+        "x": 12,
+        "y": 218
+      },
+      {
+        "name": "label_task",
+        "schemaName": "public",
+        "x": 1001.70283203125,
+        "y": 12
+      }
+    ],
+    "tableGroupCollapseStates": [],
+    "stickyNoteLayouts": [],
+    "referencePaths": []
+  },
+  "views": {}
+}
