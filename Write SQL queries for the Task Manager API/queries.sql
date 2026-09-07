@@ -12,7 +12,7 @@ ORDER BY t.id;
 -- List only one user's tasks.
 SELECT id, title, priority, done
 FROM tasks
-WHERE user_id = 1
+WHERE user_id = 1;
 
 -- List all users with a count of their tasks, including users with zero.
 SELECT
