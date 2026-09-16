@@ -61,6 +61,23 @@ php artisan serve
 
 The app is served at <http://localhost:8000>. The health endpoint is `/up`.
 
+## Task API
+
+The routes in `routes/api.php` follow the Week 3 design
+(`Map every task-manager action to the correct verb and status code/docs/api.md`),
+served under the `/api` prefix. Errors are always returned as JSON.
+
+| Action           | Method      | Path                | Status now          | Contract (Week 6) |
+|------------------|-------------|---------------------|---------------------|-------------------|
+| List tasks       | `GET`       | `/api/tasks`        | `200`               | `200`             |
+| Show a task      | `GET`       | `/api/tasks/{task}` | `200`, `404`        | `200`, `404`      |
+| Create a task    | `POST`      | `/api/tasks`        | `501`               | `201`, `422`      |
+| Replace / update | `PUT` `PATCH` | `/api/tasks/{task}` | `501`, `404`      | `200`, `404`, `422` |
+| Delete a task    | `DELETE`    | `/api/tasks/{task}` | `501`, `404`        | `204`, `404`      |
+
+`{task}` uses route model binding, so an unknown id returns `404` before the controller
+runs. Writes answer `501 Not Implemented` until the Week 6 CRUD and validation work.
+
 ## Test
 
 ```bash
@@ -74,8 +91,8 @@ rejects invalid data; SQLite cannot hold the CHECK rules, so it is not used.
 
 ## Conventions
 
-- **Route files hold no business logic.** `routes/web.php` only maps URIs to
-  controller actions; the work lives in `app/Http/Controllers`.
+- **Route files hold no business logic.** `routes/web.php` and `routes/api.php` only
+  map URIs to controller actions; the work lives in `app/Http/Controllers`.
 - Session, cache and queue default to file/sync drivers so a fresh clone boots
   before any migration has run. Switch them to `database` in `.env` once the
   schema is migrated.
