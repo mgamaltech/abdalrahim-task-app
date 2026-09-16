@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Label;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +17,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $users = User::factory(5)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $labels = collect(['bug', 'feature', 'chore', 'urgent'])
+            ->map(fn (string $name) => Label::factory()->create(['name' => $name]));
+
+        $openTasks = Task::factory(15)
+            ->recycle($users)
+            ->create();
+
+        $doneTasks = Task::factory(5)
+            ->recycle($users)
+            ->done()
+            ->create();
+
+        $openTasks->concat($doneTasks)->each(
+            fn (Task $task) => $task->labels()->attach(
+                $labels->random(rand(1, 2))->pluck('id')
+            )
+        );
     }
 }
