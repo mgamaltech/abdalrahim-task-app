@@ -20,17 +20,38 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-Create the database (start MySQL in the XAMPP control panel first):
+Create the app and testing databases (start MySQL in the XAMPP control panel first):
 
 ```bash
 mysql -u root -e "CREATE DATABASE abdalrahim_task_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -e "CREATE DATABASE abdalrahim_task_app_testing CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-Then run the migrations:
+Then run the migrations and load the sample data:
 
 ```bash
-php artisan migrate
+php artisan migrate --seed
 ```
+
+To rebuild from scratch at any time (drops every table first):
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+## Database schema
+
+The migrations reproduce the Week 4 schema (`schema.sql`), including its constraint names:
+
+| Table        | Rules enforced by the database                                                                                   |
+|--------------|------------------------------------------------------------------------------------------------------------------|
+| `users`      | `uq_users_email`; name and email not blank                                                                       |
+| `labels`     | `uq_labels_name`; name not blank                                                                                 |
+| `tasks`      | title not blank; priority in `low`/`medium`/`high`; `done` requires `completed_at`; `fk_tasks_user` → `SET NULL` on delete, `CASCADE` on update; index `idx_tasks_user_done` |
+| `label_task` | composite primary key (`label_id`, `task_id`); both foreign keys `CASCADE` on delete and update; index `idx_label_task_task` |
+
+The CHECK rules are raw MySQL/MariaDB statements, so the migrations target
+MySQL/MariaDB only. Every migration is reversible with `php artisan migrate:rollback`.
 
 ## Run
 
@@ -46,8 +67,10 @@ The app is served at <http://localhost:8000>. The health endpoint is `/up`.
 php artisan test
 ```
 
-Tests run against an in-memory SQLite database (configured in `phpunit.xml`), so
-MySQL does not need to be running.
+Tests run against the `abdalrahim_task_app_testing` MySQL database (configured in
+`phpunit.xml`), so MySQL must be running. The schema tests in
+`tests/Feature/DatabaseSchemaTest.php` rebuild that database and prove each constraint
+rejects invalid data; SQLite cannot hold the CHECK rules, so it is not used.
 
 ## Conventions
 
